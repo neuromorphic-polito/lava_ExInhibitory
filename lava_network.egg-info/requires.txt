@@ -1,3 +1,4 @@
 numpy
 matplotlib
 tqdm
+lava-nc@ git+https://github.com/lava-nc/lava@b7d5929e7402ec02e6953bdb0853ba089d582d90

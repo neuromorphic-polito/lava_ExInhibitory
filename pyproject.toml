@@ -8,7 +8,8 @@ authors = [
 dependencies = [
     "numpy",
     "matplotlib",
-    "tqdm"
+    "tqdm",
+    "lava-nc@git+https://github.com/lava-nc/lava@b7d5929e7402ec02e6953bdb0853ba089d582d90",
     ]
 requires-python = ">=3.9"
 readme = "README.md"

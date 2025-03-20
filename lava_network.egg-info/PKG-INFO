@@ -1,4 +1,4 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.4
 Name: lava_network
 Version: 0.1.0
 Summary: Lava porting of snntorch ExInhibitory network
@@ -9,5 +9,6 @@ Description-Content-Type: text/markdown
 Requires-Dist: numpy
 Requires-Dist: matplotlib
 Requires-Dist: tqdm
+Requires-Dist: lava-nc@ git+https://github.com/lava-nc/lava@b7d5929e7402ec02e6953bdb0853ba089d582d90
 
 # lava_network

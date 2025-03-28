@@ -1,14 +1,15 @@
-
 import matplotlib.pyplot as plt
 import numpy as np
 import colorcet as cc
 
 def create_raster_plot(data, name=None, figsize=None):
+    """To plot spikes. It receives the matrix of spikes, that for example is
+    extracted from the network output."""
     plt.clf()
     if figsize is None:
         channels, timesteps = data.shape
         x_size = timesteps / 2
-        y_size = channels / 10 if channels > 100 else channels 
+        y_size = channels / 10 if channels > 100 else channels
         figsize = (x_size, y_size)
     else:
         figsize = figsize
@@ -39,16 +40,18 @@ def create_raster_plot(data, name=None, figsize=None):
 def plot_signals(matrix, name=None, figsize=None):
     """
     Plots the signal for each channel in the provided matrix.
-    
+    Used for internal state or input signal
+
     Parameters:
     matrix (np.ndarray): A 2D array where the first dimension represents channels
                          and the second dimension represents timesteps.
+
     """
     channels, timesteps = matrix.shape
 
     if figsize is None:
         x_size = timesteps / 2
-        y_size = int(channels / 10) if channels > 100 else channels 
+        y_size = int(channels / 10) if channels > 100 else channels
         figsize = (x_size, y_size)
     else:
         figsize = figsize
@@ -75,7 +78,7 @@ def plot_signals(matrix, name=None, figsize=None):
 def plot_signals_subplot(matrix1, matrix2, name1=None, name2=None, figsize=None):
     """
     Plots the signal for each channel in the provided matrices side by side.
-    
+
     Parameters:
     matrix1 (np.ndarray): A 2D array where the first dimension represents channels
                         and the second dimension represents timesteps.
@@ -86,25 +89,25 @@ def plot_signals_subplot(matrix1, matrix2, name1=None, name2=None, figsize=None)
     channels2, timesteps2 = matrix2.shape
 
     if figsize is None:
-        x_size = max(timesteps1, timesteps2) 
+        x_size = max(timesteps1, timesteps2)
         y_size = max(channels1, channels2) / 20 if max(channels1, channels2) > 100 else max(channels1, channels2)
         figsize = (x_size, y_size)
     else:
         figsize = figsize
 
     fig, axs = plt.subplots(1, 2, figsize=figsize)
-    
+
     colorblind_colormap = cc.cm['CET_CBL2']
     for i in range(channels1):
         axs[0].plot(matrix1[i], label=f'Channel {i+1}')
     for i in range(channels2):
         axs[1].plot(matrix2[i], label=f'Channel {i+1}')
-    
+
     if name1:
         axs[0].set_title(f"{name1} Signal Plot")
     else:
         axs[0].set_title('Signal Plot 1')
-    
+
     if name2:
         axs[1].set_title(f"{name2} Signal Plot")
     else:
@@ -117,13 +120,13 @@ def plot_signals_subplot(matrix1, matrix2, name1=None, name2=None, figsize=None)
         ax.set_xticks(ticks=np.arange(max(timesteps1, timesteps2)), labels=np.arange(max(timesteps1, timesteps2)))
         ax.grid(axis='x', color='black', linestyle='--', linewidth=0.2)
         # ax.legend(ncol=12, loc='upper center', bbox_to_anchor=(0.5, -0.05), facecolor='white', framealpha=1)
-    
+
     plt.show()
 
 def create_raster_plot_subplot(data1, data2, name1=None, name2=None, figsize=None):
     """
     Creates raster plots for the provided data side by side.
-    
+
     Parameters:
     data1 (np.ndarray): A 2D array where the first dimension represents channels
                         and the second dimension represents timesteps.
@@ -140,11 +143,11 @@ def create_raster_plot_subplot(data1, data2, name1=None, name2=None, figsize=Non
         figsize = figsize
 
     fig, axs = plt.subplots(1, 2, figsize=figsize)
-    
+
     for channel in range(data1.shape[0]):
         spike_times = np.where(data1[channel])[0]
         axs[0].vlines(spike_times, channel + 0.5, channel + 1.5)
-    
+
     for channel in range(data2.shape[0]):
         spike_times = np.where(data2[channel])[0]
         axs[1].vlines(spike_times, channel + 0.5, channel + 1.5)
@@ -153,7 +156,7 @@ def create_raster_plot_subplot(data1, data2, name1=None, name2=None, figsize=Non
         axs[0].set_title(f"{name1} Raster Plot")
     else:
         axs[0].set_title('Raster Plot 1')
-    
+
     if name2:
         axs[1].set_title(f"{name2} Raster Plot")
     else:
@@ -167,6 +170,5 @@ def create_raster_plot_subplot(data1, data2, name1=None, name2=None, figsize=Non
         ax.set_xlim(0, max(data1.shape[1], data2.shape[1]))
         ax.set_xticks(ticks=np.arange(max(data1.shape[1], data2.shape[1])), labels=np.arange(max(data1.shape[1], data2.shape[1])))
         ax.grid(axis='x', color='black', linestyle='--', linewidth=0.3)
-    
-    plt.show()
 
+    plt.show()

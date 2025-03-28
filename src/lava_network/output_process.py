@@ -21,8 +21,16 @@ from lava.magma.core.decorator import implements, requires, tag
 import numpy as np
 
 class OutputProcess(AbstractProcess):
-    """Process to gather spikes from 10 output LIF neurons and interpret the
-    highest spiking rate as the classifier output"""
+    """Process to gather spikes from output LIF neurons and interpret the
+    highest spiking rate as the classifier output
+    This process runs on the CPU.
+
+    There are as many inputs as classes, and for each input, the spikes are
+    accumulated over a certain number of time-steps. After that, the class
+    with the highest accumulated spikes is chosen as the predicted class.
+
+    AS the spikes are binary, at each timestep we just need to add.
+    """
 
     def __init__(self,num_classes, num_samples, num_step_per_sample, clear_intervall, **kwargs):
         super().__init__()
@@ -40,6 +48,11 @@ class OutputProcess(AbstractProcess):
 
 
 class PyOutputProcessModel(PyLoihiProcessModel):
+    """Model without any tag, so that it can be inherited by both fixed and
+    floating-point versions.
+    The only port that needs to be redifined is spikes_in, which is different
+    for fixed and floating-point versions.
+    """
     label_in: PyInPort = LavaPyType(PyInPort.VEC_DENSE, int)
     spikes_in: None
     clear_intervall: int = LavaPyType(int, int)
@@ -48,7 +61,7 @@ class PyOutputProcessModel(PyLoihiProcessModel):
     num_step_per_sample: int = LavaPyType(int, int)
     pred_labels: np.ndarray = LavaPyType(np.ndarray, int)
     gt_labels: np.ndarray = LavaPyType(np.ndarray, int)
-        
+
     def __init__(self, proc_params):
         super().__init__(proc_params=proc_params)
         self.current_img_id = 0
@@ -62,7 +75,7 @@ class PyOutputProcessModel(PyLoihiProcessModel):
         return False
 
     def run_post_mgmt(self):
-        """Post-Management phase: executed only when guard function above 
+        """Post-Management phase: executed only when guard function above
         returns True.
         """
         gt_label = self.label_in.recv()

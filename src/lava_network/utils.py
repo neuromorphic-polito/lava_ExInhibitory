@@ -1,3 +1,6 @@
+"""utils.py from the LAVA tutorial for STDP. Probably not modified"""
+
+
 # Copyright (C) 2021-22 Intel Corporation
 # SPDX-License-Identifier: BSD-3-Clause
 # See: https://spdx.org/licenses/
@@ -200,14 +203,14 @@ def generate_post_spikes(pre_spike_times, num_steps, spike_prob_post):
             if ts in range(pre_ts-12, pre_ts-2):
                 if np.random.rand(1) < spike_prob_post[1]:
                     spike_raster_post[1][ts] = 1
-    
+
     return spike_raster_post
 
 
 def plot_spikes(spikes, figsize, legend, colors, title, num_steps):
     offsets = list(range(1, len(spikes) + 1))
     num_x_ticks = np.arange(0, num_steps+1, 25)
-    
+
     plt.figure(figsize=figsize)
 
     plt.eventplot(positions=spikes,
@@ -223,7 +226,7 @@ def plot_spikes(spikes, figsize, legend, colors, title, num_steps):
     plt.grid(which='minor', color='lightgrey', linestyle=':', linewidth=0.5)
     plt.grid(which='major', color='lightgray', linewidth=0.8)
     plt.minorticks_on()
-    
+
     plt.yticks(ticks=offsets, labels=legend)
 
     plt.show()
@@ -232,7 +235,7 @@ def plot_spikes(spikes, figsize, legend, colors, title, num_steps):
 def plot_time_series(time, time_series, ylabel, title, figsize, color):
     plt.figure(figsize=figsize)
     plt.step(time, time_series, color=color)
-   
+
     plt.title(title)
     plt.xlabel("Time steps")
     plt.grid(which='minor', color='lightgrey', linestyle=':', linewidth=0.5)
@@ -240,7 +243,7 @@ def plot_time_series(time, time_series, ylabel, title, figsize, color):
     plt.minorticks_on()
 
     plt.ylabel(ylabel)
-    
+
     plt.show()
 
 
@@ -248,10 +251,10 @@ def plot_time_series_subplots(time, time_series_y1, time_series_y2, ylabel,
                               title, figsize, color, legend,
                               leg_loc="upper left"):
     plt.figure(figsize=figsize)
-    
+
     plt.step(time, time_series_y1, label=legend[0], color=color[0])
     plt.step(time, time_series_y2, label=legend[1], color=color[1])
-        
+
     plt.title(title)
     plt.xlabel("Time steps")
     plt.ylabel(ylabel)
@@ -261,7 +264,7 @@ def plot_time_series_subplots(time, time_series_y1, time_series_y2, ylabel,
     plt.xlim(0, len(time_series_y1))
 
     plt.legend(loc=leg_loc)
-    
+
     plt.show()
 
 
@@ -270,11 +273,11 @@ def plot_spikes_time_series(time, time_series, spikes, figsize, legend,
 
     offsets = list(range(1, len(spikes) + 1))
     num_x_ticks = np.arange(0, num_steps+1, 25)
-    
+
     plt.figure(figsize=figsize)
-    
+
     plt.subplot(211)
-    plt.eventplot(positions=spikes, 
+    plt.eventplot(positions=spikes,
                   lineoffsets=offsets,
                   linelength=0.9,
                   colors=colors)
@@ -287,13 +290,13 @@ def plot_spikes_time_series(time, time_series, spikes, figsize, legend,
     plt.grid(which='minor', color='lightgrey', linestyle=':', linewidth=0.5)
     plt.grid(which='major', color='lightgray', linewidth=0.8)
     plt.minorticks_on()
-    
+
     plt.yticks(ticks=offsets, labels=legend)
     plt.tight_layout(pad=3.0)
 
     plt.subplot(212)
     plt.step(time, time_series, color=colors)
-   
+
     plt.title(title[0])
     plt.xlabel("Time steps")
     plt.grid(which='minor', color='lightgrey', linestyle=':', linewidth=0.5)
@@ -302,7 +305,7 @@ def plot_spikes_time_series(time, time_series, spikes, figsize, legend,
     plt.margins(x=0)
 
     plt.ylabel("Trace Value")
-    
+
     plt.show()
 
 
@@ -311,7 +314,7 @@ def create_raster_plot(data, name=None, figsize=(16,10), label_fontsize=14, tick
     channels, timesteps = data.shape
     if figsize is None:
         x_size = timesteps / 2
-        y_size = channels / 10 if channels > 100 else channels 
+        y_size = channels / 10 if channels > 100 else channels
         figsize = (x_size, y_size)
     else:
         figsize = figsize
@@ -347,7 +350,7 @@ def create_raster_plot(data, name=None, figsize=(16,10), label_fontsize=14, tick
 def plot_signals(matrix, name=None, figsize=(15,10),  tick_fontsize=14, label_fontsize=16):
     """
     Plots the signal for each channel in the provided matrix.
-    
+
     Parameters:
     matrix (np.ndarray): A 2D array where the first dimension represents channels
                          and the second dimension represents timesteps.
@@ -356,7 +359,7 @@ def plot_signals(matrix, name=None, figsize=(15,10),  tick_fontsize=14, label_fo
 
     if figsize is None:
         x_size = timesteps / 2
-        y_size = channels / 10 if channels > 100 else channels 
+        y_size = channels / 10 if channels > 100 else channels
         figsize = (x_size, y_size)
     else:
         figsize = figsize
@@ -364,7 +367,7 @@ def plot_signals(matrix, name=None, figsize=(15,10),  tick_fontsize=14, label_fo
     plt.figure(figsize=figsize)
     for i in range(channels):
         plt.plot(matrix[i], label=f'Channel {i+1}')
-    
+
     if name:
         plt.title(f"{name} Signal Plot")
     else:

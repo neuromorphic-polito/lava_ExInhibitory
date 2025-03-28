@@ -26,27 +26,29 @@ from lava_network.spiking_dataloader import WISDM_spiking_dataloader, Py_spike_d
 np.set_printoptions(linewidth=np.inf)
 
 
-class WISDM_REWARD_spiking_dataloader(WISDM_spiking_dataloader):
-    """Extend the WISDM_spiking_dataloader to include a reward signal
-    The reward signal is simply the one-hot encoded vector of the current label
-    """
+# Do not uncomment until issue https://github.com/neuromorphic-polito/lava_ExInhibitory/issues/4 is fixed
 
-    def __init__(self, signal_set, clear_intervall=0, **kwargs):
-        super().__init__(signal_set, clear_intervall, **kwargs)
+# class WISDM_REWARD_spiking_dataloader(WISDM_spiking_dataloader):
+#     """Extend the WISDM_spiking_dataloader to include a reward signal
+#     The reward signal is simply the one-hot encoded vector of the current label
+#     """
 
-        self.spike_objcetive = OutPort(shape=(self.num_classes.init,))  # Objective spikes to the classifier
+#     def __init__(self, signal_set, clear_intervall=0, **kwargs):
+#         super().__init__(signal_set, clear_intervall, **kwargs)
 
-@implements(proc=WISDM_REWARD_spiking_dataloader, protocol=LoihiProtocol)
-@requires(CPU)
-@tag("floating_pt", "fixed_pt")
-class PySpikeRewardDataloader(Py_spike_dataloader):
+#         self.spike_objcetive = OutPort(shape=(self.num_classes.init,))  # Objective spikes to the classifier
 
-    spike_objcetive: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, np.float32, precision=32)
+# @implements(proc=WISDM_REWARD_spiking_dataloader, protocol=LoihiProtocol)
+# @requires(CPU)
+# @tag("floating_pt", "fixed_pt")
+# class PySpikeRewardDataloader(Py_spike_dataloader):
 
-    def run_spk(self):
-        super().run_spk()
-        obj_out = np.zeros(self.num_classes)
+#     spike_objcetive: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, np.float32, precision=32)
 
-        # Get a one hot encoded vector for the current label
-        obj_out[self.curr_label] = 1
-        self.spike_objcetive.send(obj_out)
+#     def run_spk(self):
+#         super().run_spk()
+#         obj_out = np.zeros(self.num_classes)
+
+#         # Get a one hot encoded vector for the current label
+#         obj_out[self.curr_label] = 1
+#         self.spike_objcetive.send(obj_out)

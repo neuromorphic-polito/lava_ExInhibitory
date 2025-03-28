@@ -22,27 +22,41 @@ class LIFEncoder(LIF):
 @requires(CPU)
 @tag("fixed_pt")
 class PyLifEncoderModelMixed(AbstractPyLifModelFloat):
+    """Mixed implementation, in which we extend the float model.
+    All calculations are done in float, but the output is converted
+    to fixed-point before sending it to the next process.
+    This LIF is only for the encoding.
+    """
 
     s_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, np.int32, precision=24)
     vth: float = LavaPyType(float, float)
-    
+
     def spiking_activation(self):
         """Spiking activation function for LIF."""
         return  self.v > self.vth
-         
-    
+
+
 @implements(proc=LIFEncoder, protocol=LoihiProtocol)
 @requires(CPU)
 @tag("floating_pt")
 class PyLifEncoderModelFloat(AbstractPyLifModelFloat):
-    
+    """Same as AbstractPyLifModelFloat. This class is necessary because of
+    Lava limitation to choose the different models for the same process.
+    This LIF is only for the encoding.
+    We use this version that outputs float so that we can make comparisons
+    between snnTorch version and Lava version.
+    """
+
     s_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, float)
     vth: float = LavaPyType(float, float)
 
     def spiking_activation(self):
         """Spiking activation function for LIF."""
         return self.v > self.vth
-    
+
+
+"""What follows is a modified version of the RSTDP LIFs from the LAVA tutorial
+tutorials/in_depth/three_factor_learning/utils.py"""
 
 class RSTDPLIF(LearningLIF):
     pass
@@ -63,7 +77,7 @@ class RSTDPLIFModelFloat(LearningNeuronModelFloat, AbstractPyLifModelFloat):
     def __init__(self, proc_params):
         super().__init__(proc_params)
         self.s_out_buff = np.zeros(proc_params["shape"])
-        self.graded_prev = np.zeros(proc_params["shape"]) 
+        self.graded_prev = np.zeros(proc_params["shape"])
 
     def spiking_activation(self):
         """Spiking activation function for Learning LIF."""
@@ -75,7 +89,7 @@ class RSTDPLIFModelFloat(LearningNeuronModelFloat, AbstractPyLifModelFloat):
 
         Currently, the third factor resembles the input graded spike.
         """
-         
+
         reward = np.array(s_out == self.graded_prev).astype(float)
         self.graded_prev = s_graded_in
         return reward
@@ -105,14 +119,14 @@ class RSTDPLIFModelFloat(LearningNeuronModelFloat, AbstractPyLifModelFloat):
         s_out_y2: sends the graded third-factor reward signal.
         """
         a_graded_in = self.a_third_factor_in.recv()
-        
+
         self.y1 = self.compute_post_synaptic_trace(self.s_out_buff)
 
         self.y2 = self.calculate_third_factor_trace(a_graded_in, self.s_out_buff)
 
         super().run_spk()
 
-        
+
 
         self.s_out_bap.send(self.s_out_buff)
         self.s_out_y1.send(self.y1)
@@ -151,7 +165,7 @@ class RSTDPLIFBitAcc(LearningNeuronModelFixed, AbstractPyLifModelFixed):
         super().__init__(proc_params)
         self.effective_vth = 0
         self.s_out_buff = np.zeros(proc_params["shape"])
-        self.graded_prev = np.zeros(proc_params["shape"]) 
+        self.graded_prev = np.zeros(proc_params["shape"])
 
     def scale_threshold(self):
         """Scale threshold according to the way Loihi hardware scales it. In
@@ -205,9 +219,9 @@ class RSTDPLIFBitAcc(LearningNeuronModelFixed, AbstractPyLifModelFixed):
 
         super().run_spk()
 
-        
 
-        
+
+
 
         self.s_out_bap.send(self.s_out_buff)
         self.s_out_y1.send(self.y1)

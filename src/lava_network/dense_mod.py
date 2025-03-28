@@ -10,37 +10,6 @@ from lava.magma.core.model.py.type import LavaPyType
 import numpy as np
 import typing as ty
 
-class DenseMod(Dense):
-    pass
-
-@implements(proc=DenseMod, protocol=LoihiProtocol)
-@requires(CPU)
-@tag("floating_pt")
-class PyDenseModModelFloat(AbstractPyDenseModelFloat):
-    s_in: PyInPort = LavaPyType(PyInPort.VEC_DENSE, bool, precision=1)
-    a_out: PyOutPort = LavaPyType(PyOutPort.VEC_DENSE, float)
-    a_buff: np.ndarray = LavaPyType(np.ndarray, float)
-    # weights is a 2D matrix of form (num_flat_output_neurons,
-    # num_flat_input_neurons)in C-order (row major).
-    weights: np.ndarray = LavaPyType(np.ndarray, float)
-    num_message_bits: np.ndarray = LavaPyType(np.ndarray, int, precision=5)
-
-    def run_spk(self):
-        # The a_out sent on a each timestep is a buffered value from dendritic
-        # accumulation at timestep t-1. This prevents deadlocking in
-        # networks with recurrent connectivity structures.
-        if self.time_step <2:
-            self.a_out.send(self.a_buff)
-        else:
-            
-            if self.num_message_bits.item() > 0:
-                s_in = self.s_in.recv()
-                self.a_buff = self.weights.dot(s_in)
-            else:
-                s_in = self.s_in.recv().astype(bool)
-                self.a_buff = self.weights[:, s_in].sum(axis=1)
-
-            self.a_out.send(self.a_buff)
 
 class DenseEncoder(Dense):
     pass
@@ -49,5 +18,9 @@ class DenseEncoder(Dense):
 @requires(CPU)
 @tag("fixed_pt", "floating_pt")
 class PyDenseEncoderModelFloat(AbstractPyDenseModelFloat):
+    """Same as AbstractPyDenseModelFloat. This class is necessary because of
+    Lava limitation to choose the different models for the same process.
+    This dense is just for the encoding. It works on Float and outputs float,
+    because the conversion to fixed-point is done in the following LIF"
+    """
     pass
-
